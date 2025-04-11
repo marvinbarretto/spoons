@@ -1,0 +1,32 @@
+[
+  {
+    "id": "pub1",
+    "name": "The Drunken Duck",
+    "lat": 51.509865,
+    "lng": -0.118092
+  },
+  {
+    "id": "pub2",
+    "name": "The King's Arms",
+    "lat": 51.503399,
+    "lng": -0.119519
+  },
+  {
+    "id": "pub3",
+    "name": "The Tipsy Badger",
+    "lat": 51.508742,
+    "lng": -0.12085
+  },
+  {
+    "id": "pub4",
+    "name": "The Old Crown",
+    "lat": 51.506543,
+    "lng": -0.12776
+  },
+  {
+    "id": "pub5",
+    "name": "The Golden Pint",
+    "lat": 51.510357,
+    "lng": -0.116773
+  }
+]
