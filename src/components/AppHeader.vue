@@ -19,6 +19,7 @@ import { signInWithPopup, signOut } from 'firebase/auth'
 import { auth, db, provider } from '@/firebase'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useAuth } from '@/composables/useAuth'
+import router from '@/router'
 
 const { currentUser } = useAuth()
 
@@ -38,6 +39,9 @@ const login = async () => {
         spoons: [],
       })
     }
+
+    // 🔁 Redirect to profile
+    router.push('/me')
   } catch (err) {
     console.error('Login failed:', err)
   }

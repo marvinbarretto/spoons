@@ -3,7 +3,7 @@ export interface Pub {
   name: string
   lat: number
   lng: number
-  landlordId?: string // null if unclaimed
+  landlordId?: string
   landlordName?: string
   lastClaimedAt?: string
 }
