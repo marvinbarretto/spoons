@@ -1,32 +1,62 @@
 [
   {
-    "id": "pub1",
-    "name": "The Drunken Duck",
-    "lat": 51.509865,
-    "lng": -0.118092
+    "id": "pub001",
+    "name": "The Watford Arms",
+    "lat": 51.6555,
+    "lng": -0.3956
   },
   {
-    "id": "pub2",
-    "name": "The King's Arms",
-    "lat": 51.503399,
-    "lng": -0.119519
+    "id": "pub002",
+    "name": "The Crooked Pint",
+    "lat": 51.6532,
+    "lng": -0.3921
   },
   {
-    "id": "pub3",
-    "name": "The Tipsy Badger",
-    "lat": 51.508742,
-    "lng": -0.12085
+    "id": "pub003",
+    "name": "The Hornet's Nest",
+    "lat": 51.6567,
+    "lng": -0.3978
   },
   {
-    "id": "pub4",
-    "name": "The Old Crown",
-    "lat": 51.506543,
-    "lng": -0.12776
+    "id": "pub004",
+    "name": "The Railway Tavern",
+    "lat": 51.6501,
+    "lng": -0.3905
   },
   {
-    "id": "pub5",
-    "name": "The Golden Pint",
-    "lat": 51.510357,
-    "lng": -0.116773
+    "id": "pub005",
+    "name": "The Golden Ale",
+    "lat": 51.6529,
+    "lng": -0.3982
+  },
+  {
+    "id": "pub006",
+    "name": "The Big Spoon",
+    "lat": 51.6547,
+    "lng": -0.3999
+  },
+  {
+    "id": "pub007",
+    "name": "The Spoon & Crown",
+    "lat": 51.6495,
+    "lng": -0.3933
+  },
+  {
+    "id": "pub008",
+    "name": "The Brew Station",
+    "lat": 51.6559,
+    "lng": -0.3874
+  },
+  {
+    "id": "pub009",
+    "name": "The Watford Tap",
+    "lat": 51.6578,
+    "lng": -0.3939
+  },
+  {
+    "id": "pub010",
+    "name": "The Hertfordshire Hog",
+    "lat": 51.6512,
+    "lng": -0.3963
   }
 ]
