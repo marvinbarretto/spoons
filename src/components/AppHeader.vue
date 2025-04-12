@@ -1,6 +1,8 @@
 <template>
   <header class="app-header">
     <h1>Spoons 🍺</h1>
+    <button @click="router.push('/check-in')">Check In</button>
+
     <nav>
       <template v-if="currentUser">
         <img :src="currentUser.photoURL || ''" class="user-photo" />
