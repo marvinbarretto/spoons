@@ -1,8 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import MapView from '../views/MapView.vue'
-import UserView from '../views/UserView.vue'
-import CheckInView from '../views/CheckInView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,17 +12,28 @@ const router = createRouter({
     {
       path: '/map',
       name: 'map',
-      component: MapView,
+      component: () => import('../views/MapView.vue'),
     },
     {
       path: '/me',
       name: 'user',
-      component: UserView,
+      component: () => import('../views/UserView.vue'),
     },
     {
       path: '/check-in',
       name: 'check-in',
-      component: CheckInView,
+      component: () => import('../views/CheckInView.vue'),
+    },
+    {
+      path: '/pubs',
+      name: 'pubs',
+      component: () => import('../views/PubListView.vue'),
+    },
+    {
+      path: '/pubs/:id',
+      name: 'PubDetail',
+      component: () => import('../views/PubDetailView.vue'),
+      props: true,
     },
     {
       path: '/about',

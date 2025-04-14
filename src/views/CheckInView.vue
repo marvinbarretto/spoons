@@ -37,68 +37,69 @@ import { usePubs } from '@/composables/usePubs'
 import { useAuth } from '@/composables/useAuth'
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore'
 import { db } from '@/firebase'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import type { Pub } from '@/types/Pub'
+import { useLeafletMap } from '@/composables/useLeafletMap'
+import { CHECK_IN_DISTANCE_METRES } from '@/constants'
+import { addSpoonToUser } from '@/services/userService'
 
 const router = useRouter()
 const { pubs } = usePubs()
 const { currentUser } = useAuth()
 
 const nearestPub = ref<(Pub & { distance: number }) | null>(null)
-// TODO: Why not add distance to Pub type?
 
 const userLocation = ref<{ lat: number; lng: number } | null>(null)
 const distanceToPub = ref<number | null>(null)
 const withinRange = ref(false)
 
 const mapRef = ref<HTMLDivElement | null>(null)
-let map: L.Map | null = null
 
-onMounted(() => {
-  const checkLocation = async () => {
-    // Wait until pub data is loaded
-    const waitForPubs = () =>
-      new Promise<void>((resolve) => {
-        const interval = setInterval(() => {
-          if (pubs.value.length > 0) {
-            clearInterval(interval)
-            resolve()
-          }
-        }, 100)
-      })
-
-    await waitForPubs()
-
-    navigator.geolocation.getCurrentPosition((pos) => {
-      userLocation.value = {
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-      }
-
-      const nearest = pubs.value
-        .map((pub) => ({
-          ...pub,
-          distance: getDistanceInMeters(
-            pub.lat,
-            pub.lng,
-            userLocation.value!.lat,
-            userLocation.value!.lng,
-          ),
-        }))
-        .sort((a, b) => a.distance - b.distance)[0]
-
-      nearestPub.value = nearest
-      distanceToPub.value = Math.round(nearest.distance)
-      withinRange.value = nearest.distance <= 100
-
-      if (!withinRange.value && mapRef.value) {
-        nextTick(() => renderMap(userLocation.value!, nearest))
-      }
+onMounted(async () => {
+  const waitForPubs = () =>
+    new Promise<void>((resolve) => {
+      const interval = setInterval(() => {
+        if (pubs.value.length > 0) {
+          clearInterval(interval)
+          resolve()
+        }
+      }, 100)
     })
-  }
 
-  checkLocation()
+  await waitForPubs()
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const userPos = {
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+    }
+
+    userLocation.value = userPos
+
+    const nearest = pubs.value
+      .map((pub) => ({
+        ...pub,
+        distance: getDistanceInMeters(pub.lat, pub.lng, userPos.lat, userPos.lng),
+      }))
+      .sort((a, b) => a.distance - b.distance)[0]
+
+    nearestPub.value = nearest
+    distanceToPub.value = Math.round(nearest.distance)
+    withinRange.value = nearest.distance <= CHECK_IN_DISTANCE_METRES
+
+    if (!withinRange.value && mapRef.value) {
+      await nextTick()
+
+      const { addMarker, addCircle, fitToPoints } = useLeafletMap(mapRef.value)
+
+      addMarker(userPos.lat, userPos.lng, 'You are here')
+      addMarker(nearest.lat, nearest.lng, nearest.name)
+      addCircle(nearest.lat, nearest.lng, 100)
+      fitToPoints([
+        [userPos.lat, userPos.lng],
+        [nearest.lat, nearest.lng],
+      ])
+    }
+  })
 })
 
 function getDistanceInMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -114,49 +115,11 @@ function getDistanceInMeters(lat1: number, lng1: number, lat2: number, lng2: num
   return R * c
 }
 
-function renderMap(userPos: { lat: number; lng: number }, pub: Pub & { distance: number }) {
-  if (!mapRef.value) return
-
-  if (map) {
-    map.remove()
-  }
-
-  map = L.map(mapRef.value)
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
-  }).addTo(map)
-
-  const userMarker = L.marker([userPos.lat, userPos.lng]).addTo(map).bindPopup('You are here')
-  const pubMarker = L.marker([pub.lat, pub.lng]).addTo(map).bindPopup(pub.name)
-
-  userMarker.openPopup() // Show user popup immediately
-  pubMarker.openPopup()
-
-  // Add a 100m radius around the pub
-  L.circle([pub.lat, pub.lng], { radius: 100, color: 'green', fillOpacity: 0.1 }).addTo(map)
-
-  // Calculate bounds
-  const bounds = L.latLngBounds([
-    [userPos.lat, userPos.lng],
-    [pub.lat, pub.lng],
-  ])
-
-  // Pad the bounds slightly for visual comfort
-  map.fitBounds(bounds, { padding: [50, 50] })
-
-  // Delay to ensure proper layout
-  setTimeout(() => {
-    map.invalidateSize()
-  }, 200)
-}
-
 async function confirmCheckIn() {
   if (!currentUser.value || !nearestPub.value) return
 
   const pub = nearestPub.value
   const pubRef = doc(db, 'pubs', pub.id)
-  const userRef = doc(db, 'users', currentUser.value.uid)
 
   await updateDoc(pubRef, {
     landlordId: currentUser.value.uid,
@@ -164,9 +127,7 @@ async function confirmCheckIn() {
     lastClaimedAt: new Date().toISOString(),
   })
 
-  await updateDoc(userRef, {
-    spoons: arrayUnion(pub.id),
-  })
+  await addSpoonToUser(currentUser.value.uid, pub.id)
 
   router.push('/me')
 }
@@ -197,3 +158,11 @@ button {
   border: 2px dashed red;
 }
 </style>
+
+<!--
+<img
+  :src="`/patterns/${pub.patternId}.svg`"
+  :alt="`Pattern for ${pub.name}`"
+  width="50"
+  height="50"
+/> -->

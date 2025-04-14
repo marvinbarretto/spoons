@@ -58,5 +58,12 @@
     "name": "The Hertfordshire Hog",
     "lat": 51.6512,
     "lng": -0.3963
+  },
+  {
+    "id": "pub011",
+    "name": "His Majesty's Noggin",
+    "lat": 52.4578,
+    "lng": 1.5634,
+    "patternId": "john-moore-glasgow"
   }
 ]

@@ -5,62 +5,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-import { db } from '@/firebase'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
-import { useAuth } from '@/composables/useAuth'
+import { ref, onMounted, nextTick } from 'vue'
+import { useLeafletMap } from '@/composables/useLeafletMap'
+import type { Pub } from '@/types/Pub'
+import { MAP_DEFAULT_CENTER } from '@/constants'
 
 // Dummy fallback location
-const defaultCoords = { lat: 51.509865, lng: -0.118092 } // London
+const defaultCoords = MAP_DEFAULT_CENTER
 
 const mapContainer = ref<HTMLDivElement | null>(null)
 
-// Haversine formula
-function getDistanceInMetres(lat1: number, lng1: number, lat2: number, lng2: number) {
-  const R = 6371e3 // Earth radius in meters
-  const φ1 = (lat1 * Math.PI) / 180
-  const φ2 = (lat2 * Math.PI) / 180
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180
-  const Δλ = ((lng2 - lng1) * Math.PI) / 180
-
-  const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
-  return R * c // in meters
-}
-
 onMounted(async () => {
   const pubsRes = await fetch('/pubs.json')
-  const pubs = await pubsRes.json()
+  const pubs: Pub[] = await pubsRes.json()
 
-  // Use browser geolocation to center map
   navigator.geolocation.getCurrentPosition(
-    (position) => {
+    async (position) => {
       const { latitude, longitude } = position.coords
-      initMap({ lat: latitude, lng: longitude }, pubs)
+      await nextTick()
+      renderMap({ lat: latitude, lng: longitude }, pubs)
     },
-    () => {
-      initMap(defaultCoords, pubs)
+    async () => {
+      await nextTick()
+      renderMap(defaultCoords, pubs)
     },
   )
 })
 
-function initMap(center: { lat: number; lng: number }, pubs: any[]) {
+function renderMap(center: { lat: number; lng: number }, pubs: Pub[]) {
   if (!mapContainer.value) return
 
-  const map = L.map(mapContainer.value).setView([center.lat, center.lng], 14)
+  const { addMarker, setView, cleanup } = useLeafletMap(mapContainer.value)
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
-  }).addTo(map)
+  setView(center.lat, center.lng, 14)
 
   pubs.forEach((pub) => {
-    const marker = L.marker([pub.lat, pub.lng]).addTo(map)
-    marker.bindPopup(`<strong>${pub.name}</strong>`)
+    addMarker(pub.lat, pub.lng, `<strong>${pub.name}</strong>`)
   })
+
+  // optional: return cleanup for future use
 }
 </script>
 

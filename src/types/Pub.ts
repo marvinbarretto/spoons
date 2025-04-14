@@ -6,4 +6,5 @@ export interface Pub {
   landlordId?: string
   landlordName?: string
   lastClaimedAt?: string
+  patternId?: string
 }
