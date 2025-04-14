@@ -35,16 +35,16 @@ import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePubs } from '@/composables/usePubs'
 import { useAuth } from '@/composables/useAuth'
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore'
+import { doc, updateDoc, collection, setDoc, getDoc } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Pub } from '@/types/Pub'
 import { useLeafletMap } from '@/composables/useLeafletMap'
 import { CHECK_IN_DISTANCE_METRES } from '@/constants'
-import { addSpoonToUser } from '@/services/userService'
+import { addBadgesToUser, addSpoonToUser } from '@/services/userService'
 
 const router = useRouter()
 const { pubs } = usePubs()
-const { currentUser } = useAuth()
+const { currentUser, userProfile } = useAuth()
 
 const nearestPub = ref<(Pub & { distance: number }) | null>(null)
 
@@ -102,6 +102,8 @@ onMounted(async () => {
   })
 })
 
+const newlyEarnedBadges = ref<string[]>([])
+
 function getDistanceInMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371e3
   const φ1 = (lat1 * Math.PI) / 180
@@ -115,20 +117,69 @@ function getDistanceInMeters(lat1: number, lng1: number, lat2: number, lng2: num
   return R * c
 }
 
+function evaluateBadges(): string[] {
+  const earned: string[] = []
+
+  if (userProfile.value?.spoons.length === 0) {
+    earned.push('first-checkin')
+  }
+
+  const now = new Date()
+  if (now.getHours() < 12) {
+    earned.push('early-riser')
+  }
+
+  return earned.filter((b) => !userProfile.value?.badges?.includes(b))
+}
+
 async function confirmCheckIn() {
   if (!currentUser.value || !nearestPub.value) return
 
   const pub = nearestPub.value
-  const pubRef = doc(db, 'pubs', pub.id)
 
-  await updateDoc(pubRef, {
-    landlordId: currentUser.value.uid,
-    landlordName: currentUser.value.displayName,
-    lastClaimedAt: new Date().toISOString(),
-  })
-
+  // 1. Add spoon to user profile
   await addSpoonToUser(currentUser.value.uid, pub.id)
 
+  // 2. Log a check-in
+  const checkInRef = doc(collection(db, 'pubs', pub.id, 'checkIns')) // Auto-ID
+  await setDoc(checkInRef, {
+    userId: currentUser.value.uid,
+    timestamp: new Date().toISOString(),
+  })
+
+  // 3. Claim landlord if pub is unclaimed
+  const pubRef = doc(db, 'pubs', pub.id)
+  const pubSnap = await getDoc(pubRef)
+
+  if (pubSnap.exists()) {
+    const pubData = pubSnap.data()
+    if (!pubData.landlordId) {
+      // 🔧 Stub logic: assign current user as landlord
+      await updateDoc(pubRef, {
+        landlordId: currentUser.value.uid,
+        landlordName: currentUser.value.displayName,
+        lastClaimedAt: new Date().toISOString(),
+      })
+    }
+  }
+
+  newlyEarnedBadges.value = evaluateBadges()
+
+  if (newlyEarnedBadges.value.length) {
+    await addBadgesToUser(currentUser.value.uid, newlyEarnedBadges.value)
+
+    router.push({
+      name: 'badge-award',
+      query: {
+        ids: newlyEarnedBadges.value.join(','),
+        returnTo: '/me',
+      },
+    })
+
+    return
+  }
+
+  // 4. Redirect to user profile
   router.push('/me')
 }
 </script>
@@ -158,11 +209,3 @@ button {
   border: 2px dashed red;
 }
 </style>
-
-<!--
-<img
-  :src="`/patterns/${pub.patternId}.svg`"
-  :alt="`Pattern for ${pub.name}`"
-  width="50"
-  height="50"
-/> -->

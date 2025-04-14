@@ -25,6 +25,11 @@ const router = createRouter({
       component: () => import('../views/CheckInView.vue'),
     },
     {
+      path: '/badge-award',
+      name: 'badge-award',
+      component: () => import('../views/BadgeAwardView.vue'),
+    },
+    {
       path: '/pubs',
       name: 'pubs',
       component: () => import('../views/PubListView.vue'),

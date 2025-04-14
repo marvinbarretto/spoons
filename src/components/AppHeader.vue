@@ -12,7 +12,7 @@
     <nav>
       <template v-if="currentUser">
         <img :src="currentUser.photoURL || ''" class="user-photo" />
-        <span>{{ currentUser.displayName }}</span>
+        <!-- <span>{{ currentUser.displayName }}</span> -->
         <button @click="logout">Logout</button>
       </template>
       <template v-else>
