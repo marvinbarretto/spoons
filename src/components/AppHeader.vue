@@ -1,7 +1,13 @@
 <template>
   <header class="app-header">
-    <h1>Spoons 🍺</h1>
-    <button @click="router.push('/check-in')">Check In</button>
+    <RouterLink to="/" class="logo">🍻 Spoons</RouterLink>
+
+    <nav>
+      <RouterLink to="/me">Me</RouterLink>
+      <RouterLink to="/check-in">Check In</RouterLink>
+      <RouterLink to="/map">Map</RouterLink>
+      <RouterLink to="/pubs">Pubs</RouterLink>
+    </nav>
 
     <nav>
       <template v-if="currentUser">

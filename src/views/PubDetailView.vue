@@ -1,15 +1,16 @@
 <template>
   <div class="pub-detail">
-    <h1>{{ pub?.name }}</h1>
+    <div class="pub-detail__title">
+      <img
+        v-if="pub?.patternId"
+        :src="`/patterns/${pub.patternId}.png`"
+        alt="Carpet pattern"
+        class="pattern-img"
+      />
+      <h1>{{ pub?.name }}</h1>
+    </div>
 
     <div class="map" ref="mapRef" />
-
-    <img
-      v-if="pub?.patternId"
-      :src="`/patterns/${pub.patternId}.png`"
-      alt="Carpet pattern"
-      class="pattern-img"
-    />
 
     <div class="landlord" v-if="pub?.landlordId">
       <p>Landlord: {{ pub.landlordName }}</p>
@@ -69,18 +70,30 @@ onMounted(async () => {
 <style scoped>
 .pub-detail {
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+.pub-detail__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .map {
   height: 250px;
   width: 100%;
   margin-bottom: 1rem;
 }
 .pattern-img {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   object-fit: cover;
-  border: 2px solid #ccc;
-  margin-bottom: 1rem;
+  border: 5px solid #ccc;
+  border-radius: 999px;
 }
 .landlord {
   display: flex;
