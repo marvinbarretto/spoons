@@ -3,9 +3,14 @@ import { useAuth } from '@/composables/useAuth'
 import { usePubs } from '@/composables/usePubs'
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore'
 import { db } from '@/firebase'
+import { onMounted } from 'vue'
 
 const { userProfile, currentUser } = useAuth()
-const { pubs } = usePubs()
+const { pubs, totalPubs, loadPubs } = usePubs()
+
+onMounted(async () => {
+  await loadPubs()
+})
 
 async function removeSpoon(spoonId: string | undefined) {
   console.log('🗑 Attempting to remove spoon:', spoonId)
@@ -66,13 +71,13 @@ const isDev = import.meta.env.DEV
     </div>
 
     <section class="counts">
-      <!-- TODO: Replace 100 with max spoons -->
-      <p>You have collected {{ userProfile.spoons.length }} spoons out of 100</p>
+      <p>You have collected {{ userProfile.spoons.length }} spoons out of {{ totalPubs }}</p>
+
       <!-- Show in a progress bar -->
       <div class="progress-bar">
         <div
           class="progress"
-          :style="{ width: `${(userProfile.spoons.length / 100) * 100}%` }"
+          :style="{ width: `${(userProfile.spoons.length / totalPubs) * 100}%` }"
         ></div>
       </div>
     </section>

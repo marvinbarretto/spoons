@@ -4,4 +4,5 @@ export interface UserProfile {
   photoURL?: string
   spoons: string[]
   badges: string[]
+  isAdmin: boolean
 }

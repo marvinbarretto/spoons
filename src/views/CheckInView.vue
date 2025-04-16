@@ -92,7 +92,9 @@ async function handleConfirmCheckIn() {
   if (!currentUser.value || !userProfile.value || !nearestPub.value) return
 
   const result = await confirmCheckIn(currentUser.value, userProfile.value, nearestPub.value)
-  if (result.redirect) router.push(result.redirect)
+  if (result.redirect) {
+    router.push(result.redirect) // 👈 THIS line handles the redirect
+  }
 }
 </script>
 

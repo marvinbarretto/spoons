@@ -5,6 +5,7 @@ type PostcodeLocation = {
   lat: number
   lng: number
   city: string
+  region: string
   country: string
 }
 
@@ -20,13 +21,14 @@ export function usePostcodeLookup() {
     try {
       const res = await fetch(`https://api.postcodes.io/postcodes/${postcode}`)
       const data = await res.json()
-      console.log('📦 API response:', data)
 
       if (data.status === 200 && data.result) {
+        console.log('📦 API response:', data)
         const loc: PostcodeLocation = {
           lat: data.result.latitude,
           lng: data.result.longitude,
           city: data.result.admin_district,
+          region: data.result.region,
           country: data.result.country,
         }
         console.log('✅ Parsed location:', loc)

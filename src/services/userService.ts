@@ -19,6 +19,7 @@ export async function initUserProfile(user: FirebaseUser) {
       photoURL: user.photoURL ?? '',
       spoons: [],
       badges: [],
+      isAdmin: false,
     }
     await setDoc(userRef, newUser)
   }

@@ -7,40 +7,45 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { useLeafletMap } from '@/composables/useLeafletMap'
-import type { Pub } from '@/types/Pub'
+import { usePubs } from '@/composables/usePubs'
 import { MAP_DEFAULT_CENTER } from '@/constants'
 
-// Dummy fallback location
+const mapContainer = ref<HTMLDivElement | null>(null)
 const defaultCoords = MAP_DEFAULT_CENTER
 
-const mapContainer = ref<HTMLDivElement | null>(null)
+const { pubs, loadPubs } = usePubs()
 
 onMounted(async () => {
-  const pubsRes = await fetch('/pubs.json')
-  const pubs: Pub[] = await pubsRes.json()
+  await loadPubs() // ✅ ensure pubs are loaded from Firestore
 
   navigator.geolocation.getCurrentPosition(
     async (position) => {
       const { latitude, longitude } = position.coords
       await nextTick()
-      renderMap({ lat: latitude, lng: longitude }, pubs)
+      renderMap({ lat: latitude, lng: longitude })
     },
     async () => {
       await nextTick()
-      renderMap(defaultCoords, pubs)
+      renderMap(defaultCoords)
     },
   )
 })
 
-function renderMap(center: { lat: number; lng: number }, pubs: Pub[]) {
+function renderMap(center: { lat: number; lng: number }) {
   if (!mapContainer.value) return
 
   const { addMarker, setView } = useLeafletMap(mapContainer.value)
 
-  setView(center.lat, center.lng, 14)
+  setView(center.lat, center.lng, 5)
 
-  pubs.forEach((pub) => {
-    addMarker(pub.location.lat, pub.location.lng, `<strong>${pub.name}</strong>`)
+  pubs.value.forEach((pub) => {
+    const { location } = pub
+    if (!location || location.lat == null || location.lng == null) {
+      console.warn(`⚠️ Skipping pub with invalid location: ${pub.name}`)
+      return
+    }
+
+    addMarker(location.lat, location.lng, `<strong>${pub.name}</strong>`)
   })
 }
 </script>
