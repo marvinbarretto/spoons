@@ -35,15 +35,13 @@ onMounted(async () => {
 function renderMap(center: { lat: number; lng: number }, pubs: Pub[]) {
   if (!mapContainer.value) return
 
-  const { addMarker, setView, cleanup } = useLeafletMap(mapContainer.value)
+  const { addMarker, setView } = useLeafletMap(mapContainer.value)
 
   setView(center.lat, center.lng, 14)
 
   pubs.forEach((pub) => {
-    addMarker(pub.lat, pub.lng, `<strong>${pub.name}</strong>`)
+    addMarker(pub.location.lat, pub.location.lng, `<strong>${pub.name}</strong>`)
   })
-
-  // optional: return cleanup for future use
 }
 </script>
 

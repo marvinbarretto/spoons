@@ -3,9 +3,21 @@ import { calculateNearestPub } from '@/composables/useCheckIn'
 import type { Pub } from '@/types/Pub'
 
 const dummyPubs: Pub[] = [
-  { id: 'pub1', name: 'Pub One', lat: 51.5, lng: -0.1 },
-  { id: 'pub2', name: 'Pub Two', lat: 51.6, lng: -0.12 },
-  { id: 'pub3', name: 'Pub Three', lat: 51.7, lng: -0.15 },
+  {
+    id: 'pub1',
+    name: 'Pub One',
+    location: { lat: 51.5, lng: -0.1, city: 'London', country: 'England' },
+  },
+  {
+    id: 'pub2',
+    name: 'Pub Two',
+    location: { lat: 51.6, lng: -0.12, city: 'London', country: 'England' },
+  },
+  {
+    id: 'pub3',
+    name: 'Pub Three',
+    location: { lat: 51.7, lng: -0.15, city: 'London', country: 'England' },
+  },
 ]
 
 describe('calculateNearestPub', () => {

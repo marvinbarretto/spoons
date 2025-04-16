@@ -56,11 +56,6 @@ const getBadgeName = (id: string) => {
 }
 
 const isDev = import.meta.env.DEV
-
-function getPatternImage(pubId: string): string {
-  const match = pubs.value.find((p) => p.id === pubId)
-  return match?.patternId ? `/patterns/${match.patternId}.png` : '/patterns/default.png'
-}
 </script>
 
 <template>
@@ -87,7 +82,6 @@ function getPatternImage(pubId: string): string {
       <p>You’ve collected {{ userProfile.spoons.length }} 🍴 spoons</p>
       <div class="badge-grid">
         <div v-for="spoon in userProfile.spoons" :key="spoon" class="badge">
-          <img :src="getPatternImage(spoon)" alt="Pattern badge" class="badge-img" />
           <p>{{ getPubName(spoon) }}</p>
           <button v-if="isDev" @click="removeSpoon(spoon)" class="dev-button">🗑 Remove</button>
         </div>

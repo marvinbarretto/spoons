@@ -1,19 +1,14 @@
 <template>
   <div class="pub-detail">
     <div class="pub-detail__title">
-      <img
-        v-if="pub?.patternId"
-        :src="`/patterns/${pub.patternId}.png`"
-        alt="Carpet pattern"
-        class="pattern-img"
-      />
+      <!-- TODO: Image of pub -->
       <h1>{{ pub?.name }}</h1>
     </div>
 
     <div class="map" ref="mapRef" />
 
     <div class="landlord" v-if="pub?.landlordId">
-      <p>Landlord: {{ pub.landlordName }}</p>
+      <p>Landlord: {{ pub?.landlordId }}</p>
       <img :src="landlord?.photoURL" :alt="landlord?.name" class="avatar" />
     </div>
 
@@ -61,8 +56,8 @@ onMounted(async () => {
   // Render map
   if (pub.value && mapRef.value) {
     const { addMarker, setView } = useLeafletMap(mapRef.value)
-    setView(pub.value.lat, pub.value.lng, 17)
-    addMarker(pub.value.lat, pub.value.lng, pub.value.name)
+    setView(pub.value.location.lat, pub.value.location.lng, 17)
+    addMarker(pub.value.location.lat, pub.value.location.lng, pub.value.name)
   }
 })
 </script>

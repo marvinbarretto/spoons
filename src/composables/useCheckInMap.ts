@@ -6,11 +6,11 @@ export function useCheckInMap(mapRef: Ref<HTMLElement | null>) {
   const renderCheckInMap = async (userPos: { lat: number; lng: number }, pub: Pub) => {
     const { addMarker, addCircle, fitToPoints } = useLeafletMap(mapRef.value)
     addMarker(userPos.lat, userPos.lng, 'You are here')
-    addMarker(pub.lat, pub.lng, pub.name)
-    addCircle(pub.lat, pub.lng, 100)
+    addMarker(pub.location.lat, pub.location.lng, pub.name)
+    addCircle(pub.location.lat, pub.location.lng, 100)
     fitToPoints([
       [userPos.lat, userPos.lng],
-      [pub.lat, pub.lng],
+      [pub.location.lat, pub.location.lng],
     ])
   }
 

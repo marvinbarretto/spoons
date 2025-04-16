@@ -28,7 +28,7 @@ function getDistanceInMeters(lat1: number, lng1: number, lat2: number, lng2: num
 export function calculateNearestPub(pubs: Pub[], userLoc: LatLng): Pub & { distance: number } {
   const withDistances = pubs.map((pub) => ({
     ...pub,
-    distance: getDistanceInMeters(pub.lat, pub.lng, userLoc.lat, userLoc.lng),
+    distance: getDistanceInMeters(pub.location.lat, pub.location.lng, userLoc.lat, userLoc.lng),
   }))
 
   return withDistances.sort((a, b) => a.distance - b.distance)[0]
