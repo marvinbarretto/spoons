@@ -3,17 +3,15 @@
     <RouterLink to="/" class="logo">🍻 Spoons</RouterLink>
 
     <nav>
-      <RouterLink to="/me">Me</RouterLink>
       <RouterLink to="/check-in">Check In</RouterLink>
       <RouterLink to="/map">Map</RouterLink>
       <RouterLink to="/pubs">Pubs</RouterLink>
-      <RouterLink to="/admin/pubs">Admin Pubs</RouterLink>
+      <RouterLink to="/admin/pubs" v-if="userProfile && userProfile?.isAdmin">Admin</RouterLink>
     </nav>
 
     <nav>
       <template v-if="currentUser">
         <img :src="currentUser.photoURL || ''" class="user-photo" />
-        <!-- <span>{{ currentUser.displayName }}</span> -->
         <button @click="logout">Logout</button>
       </template>
       <template v-else>
@@ -30,7 +28,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useAuth } from '@/composables/useAuth'
 import router from '@/router'
 
-const { currentUser } = useAuth()
+const { currentUser, userProfile } = useAuth()
 
 const login = async () => {
   try {
@@ -50,7 +48,7 @@ const login = async () => {
     }
 
     // 🔁 Redirect to profile
-    router.push('/me')
+    router.push('/')
   } catch (err) {
     console.error('Login failed:', err)
   }

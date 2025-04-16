@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import { getAuth } from 'firebase/auth'
@@ -13,64 +12,58 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
-      meta: { title: `Home | ${SITE_TITLE}` },
+      component: () => import('../views/UserView.vue'),
+      meta: { title: `Home` },
     },
     {
       path: '/map',
       name: 'map',
       component: () => import('../views/MapView.vue'),
-      meta: { title: `Map | ${SITE_TITLE}` },
-    },
-    {
-      path: '/me',
-      name: 'user',
-      component: () => import('../views/UserView.vue'),
-      meta: { title: `User | ${SITE_TITLE}` },
+      meta: { title: `Map` },
     },
     {
       path: '/check-in',
       name: 'check-in',
       component: () => import('../views/CheckInView.vue'),
-      meta: { title: `Check In | ${SITE_TITLE}` },
+      meta: { title: `Check In` },
     },
     {
       path: '/badge-award',
       name: 'badge-award',
       component: () => import('../views/BadgeAwardView.vue'),
-      meta: { title: `Badge Award | ${SITE_TITLE}` },
+      meta: { title: `Badge Award` },
     },
     {
       path: '/pubs',
       name: 'pubs',
       component: () => import('../views/PubListView.vue'),
-      meta: { title: `Pubs | ${SITE_TITLE}` },
+      meta: { title: `Pubs` },
     },
     {
       path: '/pubs/:id',
       name: 'PubDetail',
       component: () => import('../views/PubDetailView.vue'),
       props: true,
-      meta: { title: `Pub Detail | ${SITE_TITLE}` },
+      meta: { title: `Pub Detail` },
     },
     {
       path: '/admin/pubs',
       name: 'admin-pubs',
       component: () => import('../views/AdminPubsView.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true, title: `Admin | ${SITE_TITLE}` },
+      meta: { requiresAuth: true, requiresAdmin: true, title: `Admin` },
     },
     {
       path: '/admin/pubs/new',
       name: 'admin-new-pub',
       component: () => import('../views/AdminNewPubView.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true, title: `New Pub | Admin | ${SITE_TITLE}` },
+      meta: { requiresAuth: true, requiresAdmin: true, title: `New Pub | Admin` },
     },
     {
       path: '/admin/pubs/:id',
       name: 'admin-edit-pub',
       component: () => import('../views/AdminEditPubView.vue'),
       props: true,
-      meta: { requiresAuth: true, requiresAdmin: true, title: `Edit Pub | Admin | ${SITE_TITLE}` },
+      meta: { requiresAuth: true, requiresAdmin: true, title: `Edit Pub | Admin` },
     },
     {
       path: '/about',
@@ -79,7 +72,7 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
-      meta: { title: `About | ${SITE_TITLE}` },
+      meta: { title: `About` },
     },
   ],
 })
@@ -105,7 +98,9 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  document.title = (to.meta.title as string) || SITE_TITLE
+  const pageTitle = to.meta.title ? `${to.meta.title} | ${SITE_TITLE}` : SITE_TITLE
+  document.title = pageTitle
+
   next()
 })
 

@@ -3,13 +3,23 @@ import { useAuth } from '@/composables/useAuth'
 import { usePubs } from '@/composables/usePubs'
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore'
 import { db } from '@/firebase'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 
-const { userProfile, currentUser } = useAuth()
+const { userProfile, currentUser, loadUserProfile } = useAuth()
 const { pubs, totalPubs, loadPubs } = usePubs()
 
 onMounted(async () => {
   await loadPubs()
+
+  if (currentUser.value && !userProfile.value) {
+    await loadUserProfile(currentUser.value.uid)
+  }
+})
+
+watch(currentUser, async (newUser) => {
+  if (newUser && !userProfile.value) {
+    await loadUserProfile(newUser.uid)
+  }
 })
 
 async function removeSpoon(spoonId: string | undefined) {
