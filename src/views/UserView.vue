@@ -66,13 +66,25 @@ function getPatternImage(pubId: string): string {
 <template>
   <div v-if="userProfile" class="user-view">
     <div class="profile">
-      <img :src="userProfile.photoURL" class="avatar" />
       <h2>{{ userProfile.name }}</h2>
-      <p>You’ve collected {{ userProfile.spoons.length }} 🍴 spoons</p>
+      <img :src="userProfile.photoURL" class="avatar" />
     </div>
+
+    <section class="counts">
+      <!-- TODO: Replace 100 with max spoons -->
+      <p>You have collected {{ userProfile.spoons.length }} spoons out of 100</p>
+      <!-- Show in a progress bar -->
+      <div class="progress-bar">
+        <div
+          class="progress"
+          :style="{ width: `${(userProfile.spoons.length / 100) * 100}%` }"
+        ></div>
+      </div>
+    </section>
 
     <section class="spoons">
       <h3>Your Spoons</h3>
+      <p>You’ve collected {{ userProfile.spoons.length }} 🍴 spoons</p>
       <div class="badge-grid">
         <div v-for="spoon in userProfile.spoons" :key="spoon" class="badge">
           <img :src="getPatternImage(spoon)" alt="Pattern badge" class="badge-img" />
@@ -84,6 +96,8 @@ function getPatternImage(pubId: string): string {
 
     <section class="badges">
       <h3>Badges</h3>
+      <p v-if="userProfile.badges?.length">You have {{ userProfile.badges.length }} badges</p>
+      <p v-else>No badges yet</p>
       <div class="badge-grid">
         <div v-for="badge in userProfile.badges || []" :key="badge" class="badge">
           <span>{{ getBadgeIcon(badge) }}</span>
@@ -108,7 +122,7 @@ function getPatternImage(pubId: string): string {
 .profile {
   background-color: rgba(255, 0, 0, 0.1);
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
@@ -141,5 +155,19 @@ section {
   height: 60px;
   display: block;
   border-radius: 50%;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 5px;
 }
 </style>

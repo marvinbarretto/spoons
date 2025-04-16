@@ -1,10 +1,13 @@
-export interface Pub {
+export type Pub = {
   id: string
   name: string
-  lat: number
-  lng: number
+  location: {
+    city: string
+    country: string
+    lat: number
+    lng: number
+  }
   landlordId?: string
-  landlordName?: string
   lastClaimedAt?: string
-  patternId?: string
+  numberOfCheckIns?: number
 }

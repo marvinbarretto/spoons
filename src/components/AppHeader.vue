@@ -7,6 +7,7 @@
       <RouterLink to="/check-in">Check In</RouterLink>
       <RouterLink to="/map">Map</RouterLink>
       <RouterLink to="/pubs">Pubs</RouterLink>
+      <RouterLink to="/admin/pubs">Admin Pubs</RouterLink>
     </nav>
 
     <nav>

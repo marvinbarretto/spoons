@@ -41,6 +41,22 @@ const router = createRouter({
       props: true,
     },
     {
+      path: '/admin/pubs',
+      name: 'admin-pubs',
+      component: () => import('../views/AdminPubsView.vue'),
+    },
+    {
+      path: '/admin/pubs/new',
+      name: 'admin-new-pub',
+      component: () => import('../views/AdminNewPubView.vue'),
+    },
+    {
+      path: '/admin/pubs/:id',
+      name: 'admin-edit-pub',
+      component: () => import('../views/AdminEditPubView.vue'),
+      props: true,
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
