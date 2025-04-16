@@ -6,18 +6,20 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import { db } from '@/firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import type { Pub } from '@/types/Pub'
 import PubForm from '@/components/admin/PubForm.vue'
+import { usePubs } from '@/composables/usePubs'
+import router from '../router'
 
-const router = useRouter()
+const { refreshPubs } = usePubs()
 
 async function createPub(data: Omit<Pub, 'id'>) {
   const id = `pub_${Date.now()}`
   const newPub: Pub = { id, ...data }
   await setDoc(doc(db, 'pubs', id), newPub)
+  await refreshPubs() // ✅ make it show in PubListView immediately
   router.push('/admin/pubs')
 }
 </script>
